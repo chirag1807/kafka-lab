@@ -24,8 +24,13 @@ func main() {
 
 		data, _ := json.Marshal(msg)
 
+		// Use a key derived from the message index modulo 3 so that messages
+		// are spread across the three partitions in a deterministic way.
+		key := fmt.Sprintf("key-%d", i%3)
+
 		err := kafka.Produce(
 			producer,
+			[]byte(key),
 			data,
 		)
 
@@ -33,6 +38,6 @@ func main() {
 			panic(err)
 		}
 
-		fmt.Println("sent", i)
+		fmt.Printf("sent msg=%-3d key=%s\n", i, key)
 	}
 }
